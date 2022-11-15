@@ -8,14 +8,14 @@ struct Color {
 	byte g;
 	byte b;
 	byte a;
-	Color(byte v_b = 0, byte v_g = 0, byte v_r = 0, byte v_a = 255) :r(v_r), g(v_g), b(v_b), a(v_a) {}
+	Color(byte v_b = 127, byte v_g = 127, byte v_r = 127, byte v_a = 255) :r(v_r), g(v_g), b(v_b), a(v_a) {}
 };
 
 struct Point {
 	float x;
 	float y;
 	Color color;
-	Point(float v_x, float v_y, Color v_color) :x(v_x), y(v_y), color(v_color) {}
+	Point(float v_x, float v_y, Color v_color = Color()) :x(v_x), y(v_y), color(v_color) {}
 	Point(const Point& p) :x(p.x), y(p.y), color(p.color) {}
 };
 

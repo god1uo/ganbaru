@@ -1,11 +1,20 @@
 #include <Windows.h>
 #include "Canvas.h"
+#include "Model.h"
 
 static HWND hWnd = nullptr;
 static HDC hDC = nullptr;
 static HDC hMem = nullptr;
-int WindowWidth = 600;
-int WindowHeight = 400;
+Canvas* canvas = nullptr;
+Model* model = nullptr;
+int WindowWidth = 2500;
+int WindowHeight = 1400;
+
+
+template<int n>
+Point v2p(const vec<n>& v) {
+	return { (float)v[0],(float)v[1] };
+}
 
 LRESULT CALLBACK WindowProc(HWND hWnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
@@ -17,6 +26,18 @@ LRESULT CALLBACK WindowProc(HWND hWnd, unsigned int uMsg, WPARAM wParam, LPARAM 
 		break;
 	}
 	return 0;
+}
+
+void Render() {
+
+	canvas->ClearScreenBuffer();
+	for (int i = 0; i < model->nfaces(); ++i) {
+		canvas->DrawLine(v2p(model->vert(i, 0)), v2p(model->vert(i, 1)));
+		canvas->DrawLine(v2p(model->vert(i, 1)), v2p(model->vert(i, 2)));
+		canvas->DrawLine(v2p(model->vert(i, 2)), v2p(model->vert(i, 0)));
+	}
+
+	BitBlt(hDC, 0, 0, WindowWidth, WindowHeight, hMem, 0, 0, SRCCOPY);
 }
 
 int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE prehinstance, PSTR cmdLine, int nCmdShow) {
@@ -70,19 +91,24 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE prehinstance, PSTR cmdLine, in
 	HBITMAP hBmp = CreateDIBSection(hDC, &bmpInfo, DIB_RGB_COLORS, (void**)&bmpBuffer, 0, 0);
 	SelectObject(hMem, hBmp);
 	memset(bmpBuffer, 0, Width * Height * 4);
-	Canvas canvas(Width, Height, (Color*)bmpBuffer);
+	canvas = new Canvas(Width, Height, (Color*)bmpBuffer);
 
 	MSG msg = { 0 };
+
+	model = new Model("D:/ganbaru/car/Car.obj");
+
+
+
 	while (WM_QUIT != msg.message) {
 		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
 		else {
-			canvas.ClearScreenBuffer();
-			canvas.DrawLine({ 100.,100.,Color(111,111) }, { -200.,1500.,Color(111,111) });
-			BitBlt(hDC, 0, 0, WindowWidth, WindowHeight, hMem, 0, 0, SRCCOPY);
+			Render();
 		}
 	}
+	delete canvas;
+	delete model;
 	return 0;
 }

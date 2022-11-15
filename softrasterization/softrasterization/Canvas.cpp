@@ -4,7 +4,7 @@ void Canvas::DrawPoint(Point p) {
 	if (p.x < 0 || p.x >= m_Width || p.y < 0 || p.y >= m_Height) {
 		return;
 	}
-	m_ColorBuffer[(int)(m_Width * p.y + p.x)] = p.color;
+	m_ColorBuffer[m_Width * (int)p.y + (int)p.x] = p.color;
 }
 
 void Canvas::DrawLine(Point p1, Point p2) {
@@ -20,33 +20,42 @@ void Canvas::DrawLine(Point p1, Point p2) {
 		delta_y ^= delta_x;
 		use_y = false;
 	}
-	int rise;
+	int rise1;
+	int rise2;
 	if (use_y) {
 		if (p1.y < p2.y)
-			rise = 1;
+			rise1 = 1;
 		else
-			rise = -1;
+			rise1 = -1;
+		if (p1.x < p2.x)
+			rise2 = 1;
+		else
+			rise2 = -1;
 	}
 	else {
 		if (p1.x < p2.x)
-			rise = 1;
+			rise1 = 1;
 		else
-			rise = -1;
+			rise1 = -1;
+		if (p1.y < p2.y)
+			rise2 = 1;
+		else
+			rise2 = -1;
 	}
 	int delta_p = 2 * delta_y - delta_x;
 	for (int i = 0; i <= step; ++i) {
 		DrawPoint(curp);
 		if (delta_p > 0) {
 			if (use_y)
-				curp.y += rise;
+				curp.y += rise1;
 			else
-				curp.x += rise;
+				curp.x += rise1;
 			delta_p -= 2 * delta_x;
 		}
 		if (use_y)
-			curp.x += rise;
+			curp.x += rise2;
 		else
-			curp.y += rise;
+			curp.y += rise2;
 		delta_p += 2 * delta_y;
 	}
 }
