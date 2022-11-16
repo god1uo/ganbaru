@@ -14,8 +14,9 @@ struct Color {
 struct Point {
 	float x;
 	float y;
+	float deep;
 	Color color;
-	Point(float v_x, float v_y, Color v_color = Color()) :x(v_x), y(v_y), color(v_color) {}
+	Point(float v_x, float v_y, float v_deep = 0, Color v_color = Color()) :x(v_x), y(v_y), deep(v_deep), color(v_color) {}
 	Point(const Point& p) :x(p.x), y(p.y), color(p.color) {}
 };
 
@@ -29,5 +30,6 @@ public:
 	void ClearScreenBuffer() { if(nullptr != m_ColorBuffer)memset(m_ColorBuffer, 0, m_Width * m_Height * sizeof Color); }
 	void DrawPoint(Point p);
 	void DrawLine(Point p1, Point p2);
+	void DrawTriangle(Point p1, Point p2, Point p3);
 };
 

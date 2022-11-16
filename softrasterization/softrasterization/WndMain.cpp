@@ -11,9 +11,8 @@ int WindowWidth = 2500;
 int WindowHeight = 1400;
 
 
-template<int n>
-Point v2p(const vec<n>& v) {
-	return { (float)v[0],(float)v[1] };
+Point v2p(const vec3& v) {
+	return { (float)v[0],(float)v[1],(float)v[2]};
 }
 
 LRESULT CALLBACK WindowProc(HWND hWnd, unsigned int uMsg, WPARAM wParam, LPARAM lParam) {
@@ -32,9 +31,7 @@ void Render() {
 
 	canvas->ClearScreenBuffer();
 	for (int i = 0; i < model->nfaces(); ++i) {
-		canvas->DrawLine(v2p(model->vert(i, 0)), v2p(model->vert(i, 1)));
-		canvas->DrawLine(v2p(model->vert(i, 1)), v2p(model->vert(i, 2)));
-		canvas->DrawLine(v2p(model->vert(i, 2)), v2p(model->vert(i, 0)));
+		canvas->DrawTriangle(v2p(model->vert(i, 0)), v2p(model->vert(i, 1)), v2p(model->vert(i, 2)));
 	}
 
 	BitBlt(hDC, 0, 0, WindowWidth, WindowHeight, hMem, 0, 0, SRCCOPY);
