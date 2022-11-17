@@ -9,6 +9,9 @@ struct Color {
 	byte b;
 	byte a;
 	Color(byte v_b = 127, byte v_g = 127, byte v_r = 127, byte v_a = 255) :r(v_r), g(v_g), b(v_b), a(v_a) {}
+	Color operator*(double v) {
+		return Color(r * v, g * v, b * v, a);
+	}
 };
 
 struct Point {
@@ -25,11 +28,13 @@ class Canvas
 	unsigned short m_Width{};
 	unsigned short m_Height{};
 	Color* m_ColorBuffer{};
+	double* m_DeepthBuffer{};
 public:
-	Canvas(int width, int height, Color* buffer) :m_Width(width), m_Height(height), m_ColorBuffer(buffer) {};
-	void ClearScreenBuffer() { if(nullptr != m_ColorBuffer)memset(m_ColorBuffer, 0, m_Width * m_Height * sizeof Color); }
-	void DrawPoint(Point p);
-	void DrawLine(Point p1, Point p2);
-	void DrawTriangle(Point p1, Point p2, Point p3);
+	Canvas(int width, int height, Color* buffer);
+	~Canvas();
+	void ClearScreenBuffer();
+	void DrawPoint(const Point& p);
+	void DrawLine(const Point& p1, const Point& p2);
+	void DrawTriangle(const Point& p1, const Point& p2, const Point& p3);
 };
 

@@ -7,8 +7,8 @@ static HDC hDC = nullptr;
 static HDC hMem = nullptr;
 Canvas* canvas = nullptr;
 Model* model = nullptr;
-int WindowWidth = 2500;
-int WindowHeight = 1400;
+int WindowWidth = 800;
+int WindowHeight = 800;
 
 
 Point v2p(const vec3& v) {

@@ -1,14 +1,34 @@
 #include "Canvas.h"
 #include "VecAndMatrix.h"
 
-void Canvas::DrawPoint(Point p) {
+Canvas::Canvas(int width, int height, Color* buffer)
+:m_Width(width), m_Height(height), m_ColorBuffer(buffer) {
+	m_DeepthBuffer = new double[m_Width * m_Height];
+}
+
+Canvas::~Canvas() {
+	delete m_DeepthBuffer;
+}
+
+void Canvas::ClearScreenBuffer() {
+	if (nullptr != m_ColorBuffer)
+		memset(m_ColorBuffer, 0, m_Width * m_Height * sizeof Color);
+	if (nullptr != m_DeepthBuffer)
+		memset(m_DeepthBuffer, 0xffffff, m_Width * m_Height * sizeof(double));
+}
+
+void Canvas::DrawPoint(const Point& p) {
 	if (p.x < 0 || p.x >= m_Width || p.y < 0 || p.y >= m_Height) {
 		return;
 	}
+	if (m_DeepthBuffer[m_Width * (int)p.y + (int)p.x] < p.deep) {
+		return;
+	}
 	m_ColorBuffer[m_Width * (int)p.y + (int)p.x] = p.color;
+	m_DeepthBuffer[m_Width * (int)p.y + (int)p.x] = p.deep;
 }
 
-void Canvas::DrawLine(Point p1, Point p2) {
+void Canvas::DrawLine(const Point& p1, const Point& p2) {
 	Point curp(p1);
 	int delta_x = fabs(p1.x - p2.x);
 	int delta_y = fabs(p1.y - p2.y);
@@ -71,7 +91,7 @@ vec3 barycentric(const Point& A, const Point& B, const Point& C, const Point& P)
 	return vec3(1 - (bct.x + bct.y) / bct.z, bct.x / bct.z, bct.y / bct.z);
 }
 
-void Canvas::DrawTriangle(Point p1,Point p2,Point p3){
+void Canvas::DrawTriangle(const Point& p1, const Point& p2, const Point& p3){
 	int lower_x = std::min(p1.x, std::min(p2.x, p3.x));
 	int lower_y = std::min(p1.y, std::min(p2.y, p3.y));
 	int upper_x = std::max(p1.x, std::max(p2.x, p3.x));
@@ -81,8 +101,9 @@ void Canvas::DrawTriangle(Point p1,Point p2,Point p3){
 		for (int j = lower_y; j <= upper_y; ++j) {
 			auto bct = barycentric(p1, p2, p3, Point(i,j));
 			if (bct.x > 0 && bct.y > 0 && bct.z > 0) {
-				double deep = p1.deep*bct.x+
-				DrawPoint(Point(i, j));
+				double deep = (p1.deep * bct.x + p2.deep * bct.y + p3.deep * bct.z)/500;
+				if(deep<1-1e-2&&deep>1e-2)
+				DrawPoint(Point(i, j, deep,Color()*deep));
 			}
 		}
 	}
